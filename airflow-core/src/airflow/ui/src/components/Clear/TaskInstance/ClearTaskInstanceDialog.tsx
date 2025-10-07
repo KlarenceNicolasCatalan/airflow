@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, { useState } from "react";
 import { Flex, Heading, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { useConfig } from "src/queries/useConfig";
 import { useTranslation } from "react-i18next";
 import { CgRedo } from "react-icons/cg";
 
@@ -58,8 +59,16 @@ const ClearTaskInstanceDialog = ({ onClose, open, taskInstance }: Props) => {
   const future = selectedOptions.includes("future");
   const upstream = selectedOptions.includes("upstream");
   const downstream = selectedOptions.includes("downstream");
+  const defaultCheckboxState = useConfig("defaultCheckboxState");
   const [runOnLatestVersion, setRunOnLatestVersion] = useState(false);
-  const [preventRunningTask, setPreventRunningTask] = useState(true);
+  const [preventRunningTask, setPreventRunningTask] = useState<boolean | undefined>(undefined);
+
+  // Sync preventRunningTask with backend config when loaded
+  React.useEffect(() => {
+    if (typeof defaultCheckboxState === "boolean" && preventRunningTask === undefined) {
+      setPreventRunningTask(defaultCheckboxState);
+    }
+  }, [defaultCheckboxState, preventRunningTask]);
 
   const [note, setNote] = useState<string | null>(taskInstance.note);
   const { isPending: isPendingPatchDagRun, mutate: mutatePatchTaskInstance } = usePatchTaskInstance({

@@ -59,6 +59,8 @@ def get_configs() -> ConfigResponse:
         "dashboard_alert": [alert for alert in DASHBOARD_UIALERTS if isinstance(alert, UIAlert)],
         "show_external_log_redirect": task_log_reader.supports_external_link,
         "external_log_name": getattr(task_log_reader.log_handler, "log_name", None),
+        # UI config value for the prevent clearing running task checkbox
+        "defaultCheckboxState": conf.getboolean("clear_running_task", "default_checkbox_state", fallback=True),
     }
 
     config.update({key: value for key, value in additional_config.items()})
